@@ -8,8 +8,11 @@
 #include "lfs.h"
 #include "lfs_util.h"
 
+#ifdef __ZEPHYR__
+#include <zephyr/logging/log.h>
+LOG_MODULE_DECLARE(littlefs, CONFIG_FS_LOG_LEVEL);
+#endif
 
-// some constants used throughout the code
 #define LFS_BLOCK_NULL ((lfs_block_t)-1)
 #define LFS_BLOCK_INLINE ((lfs_block_t)-2)
 
@@ -492,6 +495,7 @@ static inline void lfs_superblock_tole32(lfs_superblock_t *superblock) {
 #endif
 
 #ifndef LFS_NO_ASSERT
+#if __ASSERT_ON
 static bool lfs_mlist_isopen(struct lfs_mlist *head,
         struct lfs_mlist *node) {
     for (struct lfs_mlist **p = &head; *p; p = &(*p)->next) {
@@ -502,6 +506,7 @@ static bool lfs_mlist_isopen(struct lfs_mlist *head,
 
     return false;
 }
+#endif
 #endif
 
 static void lfs_mlist_remove(lfs_t *lfs, struct lfs_mlist *mlist) {
